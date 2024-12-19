@@ -5,20 +5,14 @@ from startbildschirm import check_password
 from users import User
 
 if check_password():
-    st.title("Geheime Inhalte")
-    st.write("Hier siehst du die Inhalte, die nur für autorisierte Benutzer zugänglich sind.")
-
-
     tab1, tab2, tab3 = st.tabs(["Geräte", "Nutzer", "Reservierung"])
 
     if "sb_current_device" not in st.session_state:
         st.session_state.sb_current_device = ""
 
-
-
     # Tabs
     with tab1:
-        st.header("Geräteauswahl")
+        st.title("Geräte-Verwaltung")
 
         devices_in_db = find_devices()
 
@@ -53,11 +47,11 @@ if check_password():
             st.stop()
 
     with tab2:
-        st.header("A dog")
+        st.title("A dog")
         st.image("https://static.streamlit.io/examples/dog.jpg", width=200)
 
     with tab3:
-        st.header("An owl")
+        st.title("An owl")
         st.image("https://static.streamlit.io/examples/owl.jpg", width=200)
 
 else:

@@ -1,6 +1,7 @@
 import streamlit as st
 
 # Definiere das Passwort
+correctpasswort = False
 PASSWORD = "meinpasswort"
 
 # Funktion zur Passwortprüfung
@@ -10,7 +11,8 @@ def check_password():
         return True
 
     # Zeige das Passwort-Eingabefeld
-    st.text_input("Passwort eingeben:", type="password", key="password")
+    if correctpasswort != True:
+        st.text_input("Passwort eingeben:", type="password", key="password")
 
     if st.button("Bestätigen"):
         if st.session_state.password == PASSWORD:
