@@ -4,9 +4,10 @@ from devices import Device
 from startbildschirm import check_password
 from users import User
 from reservations import Reservation
+from maintenance import Maintenance
 
 if check_password():
-    tab1, tab2, tab3 = st.tabs(["Geräte", "Nutzer", "Reservierung"])
+    tab1, tab2, tab3, tab4 = st.tabs(["Geräte", "Nutzer", "Reservierungssystem", "Wartungs-Management"])
 
     if "sb_current_device" not in st.session_state:
         st.session_state.sb_current_device = ""
@@ -91,16 +92,48 @@ if check_password():
                 st.success(f"Reservierung {remove_id} entfernt.")
             except Exception as e:
                 st.error(f"Fehler beim Entfernen der Reservierung: {e}")
-        # with st.form("delete_reservation"):
-        #     reservation_id = st.text_input("Reservierungs-ID")
 
-        #     submitted = st.form_submit_button("Reservierung entfernen")
-        #     if submitted:
-        #         Reservation.delete_reservation(reservation_id)
-        #         st.write("Reservierung entfernt.")
-        #         st.rerun()
-        #     else:
-        #         st.write("Bitte gib die Reservierungs-ID ein.")
+    with tab4:
+        st.title("Wartungs-Management")
+        if st.button("Wartungen anzeigen"):
+            st.subheader("Wartungen")
+            device_maintenance = Maintenance.show_maintenance()
+            if device_maintenance:
+                import pandas as pd
+                df2 = pd.DataFrame(device_maintenance)
+                st.dataframe(df2)
+            else:
+                st.write("Keine Wartung gefunden.")
+
+        st.write("---")
+
+        st.subheader("Wartung bearbeiten")
+        with st.form("configure_maintenance"):
+            new_device_id = st.number_input("Geräte-ID", min_value=1, max_value=len(Maintenance.show_maintenance()), step=1)
+            new_start_time = st.text_input("Startzeit (Format: 2021-12-31 23:59:59)")
+            new_end_time = st.text_input("Endzeit (Format: 2021-12-31 23:59:59)")
+            new_cost = st.number_input("Kosten")
+
+            submit_configuration = st.form_submit_button("Wartung bearbeiten")
+            if submit_configuration:
+                try:
+                    Maintenance.configure_maintenance(new_device_id, new_start_time, new_end_time, new_cost)
+                    st.write("Wartung konfiguriert.")
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"Fehler beim Konfigurieren der Wartung: {e}")
+
+        st.write("---")
+
+        if st.button("Quartalskosten anzeigen"):
+            st.subheader("Quartalskosten")
+            quarterly_costs = Maintenance.calculate_quarterly_costs()
+            if quarterly_costs:
+                st.write(f"Q1: {quarterly_costs:.2f}€")
+            
+            else:
+                st.write("Keine Wartungskosten verfügbar.")
+
 
 
 else:
