@@ -84,23 +84,13 @@ if check_password():
         st.write("---")
 
         st.subheader("Reservierung entfernen")
-        remove_id = st.number_input("Reservierungs-ID", min_value=1, step=1)
+        remove_id = st.number_input("Reservierungs-ID", min_value=1, max_value=len(Reservation.get_all_reservations()), step=1)
         if st.button("Reservierung entfernen"):
             try:
                 Reservation.delete_reservation(remove_id)
                 st.success(f"Reservierung {remove_id} entfernt.")
             except Exception as e:
                 st.error(f"Fehler beim Entfernen der Reservierung: {e}")
-        # with st.form("delete_reservation"):
-        #     reservation_id = st.text_input("Reservierungs-ID")
-
-        #     submitted = st.form_submit_button("Reservierung entfernen")
-        #     if submitted:
-        #         Reservation.delete_reservation(reservation_id)
-        #         st.write("Reservierung entfernt.")
-        #         st.rerun()
-        #     else:
-        #         st.write("Bitte gib die Reservierungs-ID ein.")
 
 
 else:
