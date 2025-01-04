@@ -3,6 +3,11 @@ from queries import find_devices
 from devices import Device
 from users import User
 
+
+
+
+
+
 # Eine Überschrift der ersten Ebene
 st.write("# Gerätemanagement")
 
