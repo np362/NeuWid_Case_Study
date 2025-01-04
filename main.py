@@ -48,6 +48,11 @@ with tab2:
 
    The data of users is stored in the user.json file
    """
+   #requirements updaten (json modul)
+   #Lösung, falls zwei gleiche Namen
+   #Personen alphabetisch sortieren
+   #Alles auf Englisch
+   
    print("Tab2")
    st.header("Personenverwaltung")
    
