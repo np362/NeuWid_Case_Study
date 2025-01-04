@@ -44,6 +44,21 @@ if check_password():
                         st.rerun()
             else:
                 st.error("Selected device is not in the database.")
+
+            st.subheader("Gerät hinzufügen")
+            with st.form("add_device"):
+            
+                new_device_name = st.text_input("Gerätename")
+                new_managed_by_user_id = st.text_input("Verantwortlicher")
+                new_device = Device(new_device_name, new_managed_by_user_id)
+                new_device.store_data()
+                st.write("Data stored.")
+
+                submit_device = st.form_submit_button("Gerät hinzufügen")
+                if submit_device:
+                    st.write("Gerät hinzugefügt.")
+                    st.rerun()
+
         else:
             st.write("No devices found.")
             st.stop()
