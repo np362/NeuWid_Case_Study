@@ -17,3 +17,9 @@
 
 - Run the tests with `python -m unittest discover -s tests -p "test_*.py"`
 - The tests are located in the `tests` folder
+
+## Links to the screenshots
+- https://imgur.com/a/IRTmBR1
+
+## Passwort for Mockup
+- meinpasswort

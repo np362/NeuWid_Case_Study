@@ -18,7 +18,7 @@ if check_password():
         st.title("Geräte-Verwaltung")
 
         devices_in_db = find_devices()
-
+        st.subheader("Gerät ändern")
         if devices_in_db:
             current_device_name = st.selectbox(
                 'Gerät auswählen',
@@ -54,11 +54,11 @@ if check_password():
                 new_managed_by_user_id = st.text_input("Verantwortlicher")
                 new_device = Device(new_device_name, new_managed_by_user_id)
                 new_device.store_data()
-                st.write("Data stored.")
 
                 submit_device = st.form_submit_button("Gerät hinzufügen")
                 if submit_device:
                     st.write("Gerät hinzugefügt.")
+                    new_device.store_data()
                     st.rerun()
 
         else:
@@ -66,98 +66,92 @@ if check_password():
             st.stop()
 
     with tab2:
-      """In this module are all the functions for managing the users
-      A user has a name and an ID (E-mail)
+        """In this module are all the functions for managing the users
+        A user has a name and an ID (E-mail)
 
-      -creating a user
-      -removing a user
-      -showing all users
+        -creating a user
+        -removing a user
+        -showing all users
 
-      The data of users is stored in the user.json file
-      """
-      #requirements updaten (json modul)
-      #Lösung, falls zwei gleiche Namen
-      #Personen alphabetisch sortieren
-      #Alles auf Englisch
+        The data of users is stored in the user.json file
+        """
+        
+        
+        print("Tab2")
+        st.header("Personnel managment")
+        
+        option = st.selectbox( 'Choose an option:', ('Create a user', 'Remove a user', 'Show all users') )
 
-      print("Tab2")
-      st.header("Personenverwaltung")
-      
-      option = st.selectbox( 'Wähle eine Option aus:', ('Create a user', 'Remove a user', 'Show all users') )
-
-      if option == "Create a user":
-         print("Option 1 wurde gewählt")
-         
-         vorname = st.text_input("Geben Sie hier den Vorname ein: ")
-         nachname = st.text_input("Geben Sie hier den Nachnamen ein: ")
-         name = vorname + " " + nachname 
-         email = vorname + "." + nachname + "@mci.edu"
-         
-         neueDaten = {name : email}
-         
-         try:
-
-            # Öffne die bestehende JSON-Datei und lade die Daten
-            with open('user.json', 'r+', encoding='utf-8') as file:
-               daten = json.load(file)
-               if name != "":
-                  st.write("Neuer Nutzer: " + name + " : " + email)
-
-               if st.button("Hinzufügen"):
-                  # Füge die neuen Daten hinzu
-                  daten['Users'][name] = email
-                  
-                  # Setze den Dateizeiger an den Anfang und überschreibe die Datei mit den aktualisierten Daten
-                  file.seek(0)
-                  json.dump(daten, file, ensure_ascii=False, indent=4)
-                  file.truncate()
-
-         except FileNotFoundError:
-            print("File nicht gefunden")
-         
-         
-
-      if option == "Remove a user":
-
-         vorname = st.text_input("Geben Sie hier den Vorname ein: ")
-         nachname = st.text_input("Geben Sie hier den Nachnamen ein: ")
-         name = vorname + " " + nachname
-         # Öffne die bestehende JSON-Datei und lade die Daten
-         try:
-            with open('user.json', 'r+', encoding='utf-8') as file:
-               daten = json.load(file)
-
-               # Entferne das Element mit dem Schlüssel "Paul Neuner"
-               
-               if st.button("Entfernen"):
-                  if name in daten["Users"]:
-                     del daten["Users"][name]
-                     st.write("Der Benutzer wurde gelöscht")  
-                  else:
-                     st.write("Der Benutzer wurde nicht gefunden")
-
-                  # Setze den Dateizeiger an den Anfang und überschreibe die Datei mit den aktualisierten Daten
-                  file.seek(0)
-                  json.dump(daten, file, ensure_ascii=False, indent=4)
-                  file.truncate()
-         except FileNotFoundError:
-            print("File nicht gefunden")
-
-
-      if option == "Show all users":
-         #unicode transformation format 8 bit ist ein Zeichencodierungssystem zum Übertragen von Zeichen in verschiedenen Schriftsystemen
-         print("Option 3 wurde gewählt")
-         try:
-            with open('user.json', 'r', encoding='utf-8') as file:
-               mydict = {}
-               data = json.load(file)
-               mydict = data['Users']
+        if option == "Create a user":
             
-            #st.write(data)
-            for i in mydict:
-               st.write(i + " : " + mydict[i])
-         except FileNotFoundError:
-            print("File nicht gefunden")
+            firstname = st.text_input("Enter the first name: ")
+            surname = st.text_input("Enter the surname: ")
+            name = firstname + " " + surname 
+            email = firstname + "." + surname + "@mci.edu"
+            
+            newdata = {name : email}
+            
+            try:
+
+                # Open existing json and adds data
+                with open('user.json', 'r+', encoding='utf-8') as file:
+                    data = json.load(file)
+                    if name != "":
+                        st.write("New user: " + name + " : " + email)
+
+                    if st.button("Add"):
+                    # add new data
+                        data['Users'][name] = email
+                    
+                        # set datapoint to the start and overwrites current data with new data
+                        file.seek(0)
+                        json.dump(data, file, ensure_ascii=False, indent=4)
+                        file.truncate()
+
+            except FileNotFoundError:
+                print("File not found")
+            
+            
+
+        if option == "Remove a user":
+
+            firstname = st.text_input("Add first name: ")
+            surname = st.text_input("Add surname: ")
+            name = firstname + " " + surname
+            
+            try:
+                with open('user.json', 'r+', encoding='utf-8') as file:
+                    data = json.load(file)
+        
+                    if st.button("Remove"):
+                        if name in data["Users"]:
+                            del data["Users"][name]
+                            st.write("The user has been deleted")
+                        else:
+                            st.write("The user does not exist")
+
+                        file.seek(0)
+                        json.dump(data, file, ensure_ascii=False, indent=4)
+                        file.truncate()
+            except FileNotFoundError:
+                print("File not found")
+
+
+        if option == "Show all users":
+
+            #unicode transformation format 8 bit ist ein Zeichencodierungssystem zum Übertragen von Zeichen in verschiedenen Schriftsystemen
+            try:
+                with open('user.json', 'r', encoding='utf-8') as file:
+                    userdict = {}
+                    data = json.load(file)
+                    userdict = data['Users']
+                    sortedusers = {k : userdict[k] for k in sorted(userdict)}
+                #st.write(data)
+                for i in sortedusers:
+                    st.write(i + " : " + sortedusers[i])
+                    print(sortedusers)
+            except FileNotFoundError:
+                print("File not found")
 
 
     with tab3:
