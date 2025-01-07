@@ -48,10 +48,9 @@ with tab2:
 
    The data of users is stored in the user.json file
    """
-   #requirements updaten (json modul)
+   
    #Lösung, falls zwei gleiche Namen
    #Personen alphabetisch sortieren
-   #Alles auf Englisch
    
    print("Tab2")
    st.header("Personenverwaltung")
@@ -59,78 +58,75 @@ with tab2:
    option = st.selectbox( 'Wähle eine Option aus:', ('Create a user', 'Remove a user', 'Show all users') )
 
    if option == "Create a user":
-      print("Option 1 wurde gewählt")
       
-      vorname = st.text_input("Geben Sie hier den Vorname ein: ")
-      nachname = st.text_input("Geben Sie hier den Nachnamen ein: ")
-      name = vorname + " " + nachname 
-      email = vorname + "." + nachname + "@mci.edu"
+      firstname = st.text_input("Geben Sie hier den Vorname ein: ")
+      lastname = st.text_input("Geben Sie hier den Nachnamen ein: ")
+      name = firstname + " " + lastname 
+      email = firstname + "." + lastname + "@mci.edu"
       
-      neueDaten = {name : email}
+      newdata = {name : email}
       
       try:
 
-         # Öffne die bestehende JSON-Datei und lade die Daten
+         # Open existing json and adds data
          with open('user.json', 'r+', encoding='utf-8') as file:
-            daten = json.load(file)
+            data = json.load(file)
             if name != "":
-               st.write("Neuer Nutzer: " + name + " : " + email)
+               st.write("New user: " + name + " : " + email)
 
-            if st.button("Hinzufügen"):
-               # Füge die neuen Daten hinzu
-               daten['Users'][name] = email
+            if st.button("Add"):
+               # add new data
+               data['Users'][name] = email
                
-               # Setze den Dateizeiger an den Anfang und überschreibe die Datei mit den aktualisierten Daten
+               # set datapoint to the start and overwrites current data with new data
                file.seek(0)
-               json.dump(daten, file, ensure_ascii=False, indent=4)
+               json.dump(data, file, ensure_ascii=False, indent=4)
                file.truncate()
 
       except FileNotFoundError:
-         print("File nicht gefunden")
+         print("File not found")
       
       
 
    if option == "Remove a user":
 
-      vorname = st.text_input("Geben Sie hier den Vorname ein: ")
-      nachname = st.text_input("Geben Sie hier den Nachnamen ein: ")
-      name = vorname + " " + nachname
-      # Öffne die bestehende JSON-Datei und lade die Daten
+      firstname = st.text_input("Add first name: ")
+      lastname = st.text_input("Add surname: ")
+      name = firstname + " " + lastname
+      
       try:
          with open('user.json', 'r+', encoding='utf-8') as file:
-            daten = json.load(file)
-
-            # Entferne das Element mit dem Schlüssel "Paul Neuner"
-            
-            if st.button("Entfernen"):
-               if name in daten["Users"]:
-                  del daten["Users"][name]
-                  st.write("Der Benutzer wurde gelöscht")
+            data = json.load(file)
+ 
+            if st.button("Remove"):
+               if name in data["Users"]:
+                  del data["Users"][name]
+                  st.write("The user has been deleted")
                else:
-                  st.write("Der Benutzer wurde nicht gefunden")
+                  st.write("The user does not exist")
 
-               # Setze den Dateizeiger an den Anfang und überschreibe die Datei mit den aktualisierten Daten
                file.seek(0)
-               json.dump(daten, file, ensure_ascii=False, indent=4)
+               json.dump(data, file, ensure_ascii=False, indent=4)
                file.truncate()
       except FileNotFoundError:
-         print("File nicht gefunden")
+         print("File not found")
 
 
    if option == "Show all users":
+
       #unicode transformation format 8 bit ist ein Zeichencodierungssystem zum Übertragen von Zeichen in verschiedenen Schriftsystemen
-      print("Option 3 wurde gewählt")
       try:
          with open('user.json', 'r', encoding='utf-8') as file:
-            mydict = {}
+            userdict = {}
             data = json.load(file)
-            mydict = data['Users']
-           
+            userdict = data['Users']
+            sortedusers = {k : userdict[k] for k in sorted(userdict)}
          #st.write(data)
-         for i in mydict:
-            st.write(i + " : " + mydict[i])
+         for i in sortedusers:
+            st.write(i + " : " + sortedusers[i])
+            print(sortedusers)
       except FileNotFoundError:
-         print("File nicht gefunden")
+         print("File not found")
 
 with tab3:
    st.header("An owl")
