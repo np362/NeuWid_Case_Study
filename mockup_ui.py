@@ -76,15 +76,6 @@ if check_password():
             st.stop()
 
     with tab2:
-        """In this module are all the functions for managing the users
-        A user has a name and an ID (E-mail)
-
-        -creating a user
-        -removing a user
-        -showing all users
-
-        The data of users is stored in the user.json file
-        """
         
         
         print("Tab2")
