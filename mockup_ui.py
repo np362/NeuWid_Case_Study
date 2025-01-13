@@ -53,13 +53,23 @@ if check_password():
                 new_device_name = st.text_input("Gerätename")
                 new_managed_by_user_id = st.text_input("Verantwortlicher")
                 new_device = Device(new_device_name, new_managed_by_user_id)
-                new_device.store_data()
 
                 submit_device = st.form_submit_button("Gerät hinzufügen")
                 if submit_device:
                     st.write("Gerät hinzugefügt.")
                     new_device.store_data()
                     st.rerun()
+
+            st.subheader("Gerät entfernen")
+            remove_device_name = current_device_name
+            device_to_remove = Device.find_by_attribute("device_name", remove_device_name)
+            if st.button("Gerät entfernen"):
+                try:
+                    device_to_remove.delete()
+                    st.success(f"Gerät {remove_device_name} entfernt.")
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"Fehler beim Entfernen des Geräts: {e}")
 
         else:
             st.write("No devices found.")
