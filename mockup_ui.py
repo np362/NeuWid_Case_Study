@@ -215,7 +215,7 @@ if check_password():
             new_device_id = st.number_input("Geräte-ID", min_value=1, max_value=len(Maintenance.show_maintenance()), step=1)
             new_start_time = st.text_input("Startzeit (Format: 2021-12-31 23:59:59)")
             new_end_time = st.text_input("Endzeit (Format: 2021-12-31 23:59:59)")
-            new_cost = st.number_input("Kosten")
+            new_cost = st.number_input("Kosten", step=0.50  )
 
             submit_configuration = st.form_submit_button("Wartung bearbeiten")
             if submit_configuration:
