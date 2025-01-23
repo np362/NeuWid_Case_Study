@@ -6,6 +6,7 @@ from startbildschirm import check_password
 from users import User
 from reservations import Reservation
 from maintenance import Maintenance
+from datetime import datetime
 
 if check_password():
     tab1, tab2, tab3, tab4 = st.tabs(["Geräte", "Nutzer", "Reservierungssystem", "Wartungs-Management"])
@@ -174,8 +175,12 @@ if check_password():
         with st.form("add_reservation"):
             device_id = st.text_input("Geräte-ID")
             user_id = st.text_input("Nutzer-ID")
-            start_time = st.text_input("Startzeit (Format: 2021-12-31 23:59:59)")
-            end_time = st.text_input("Endzeit (Format: 2021-12-31 23:59:59)")
+            start_time_date = st.date_input("Startzeit Datum", min_value=None, max_value=None)
+            start_zeit = st.time_input("Startzeit Uhrzeit")
+            start_time = datetime.combine(start_time_date, start_zeit).strftime("%Y-%m-%d %H:%M:%S")
+            end_time_date = st.date_input("Endzeit Datum", min_value=None, max_value=None)
+            end_zeit = st.time_input("Endzeit Uhrzeit")
+            end_time = datetime.combine(end_time_date, end_zeit).strftime("%Y-%m-%d %H:%M:%S")
 
             submitted = st.form_submit_button("Reservierung hinzufügen")
             if submitted:
@@ -213,8 +218,12 @@ if check_password():
         st.subheader("Wartung bearbeiten")
         with st.form("configure_maintenance"):
             new_device_id = st.number_input("Geräte-ID", min_value=1, max_value=len(Maintenance.show_maintenance()), step=1)
-            new_start_time = st.text_input("Startzeit (Format: 2021-12-31 23:59:59)")
-            new_end_time = st.text_input("Endzeit (Format: 2021-12-31 23:59:59)")
+            new_start_date = st.date_input("Startzeit Datum", min_value=None, max_value=None)
+            new_start_zeit = st.time_input("Startzeit Uhrzeit")
+            new_start_time = datetime.combine(new_start_date, new_start_zeit).strftime("%Y-%m-%d %H:%M:%S")
+            new_end_date = st.date_input("Endzeit Datum", min_value=None, max_value=None)
+            new_end_zeit = st.time_input("Endzeit Uhrzeit")
+            new_end_time = datetime.combine(new_end_date, new_end_zeit).strftime("%Y-%m-%d %H:%M:%S")
             new_cost = st.number_input("Kosten", step=0.50  )
 
             submit_configuration = st.form_submit_button("Wartung bearbeiten")
