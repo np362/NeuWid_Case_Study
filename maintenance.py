@@ -69,6 +69,19 @@ class Maintenance:
         })
     
     @classmethod
+    def calculate_intervall_until_maintenance(cls, id: int):
+        """Calculate the time until the next maintenance"""
+        now = datetime.now()
+        time_until_maintenance = 0
+        for maintenance in cls.maintenances:
+            if id == maintenance.id and now < maintenance["start_time"]:
+                time_until_maintenance = maintenance["start_time"] - now
+            else:
+                continue
+        return time_until_maintenance
+
+
+    @classmethod
     def calculate_quarterly_costs(cls):
         """Calculate maintenance costs per quarter"""
         cost = 0

@@ -33,6 +33,7 @@ class Device():
         if result:
             # Update the existing record with the current instance's data
             result = self.db_connector.update(self.__dict__, doc_ids=[result[0].doc_id])
+            
             print("Data updated.")
         else:
             # If the device doesn't exist, insert a new record
