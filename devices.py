@@ -5,10 +5,17 @@ from serializer import serializer
 from datetime import datetime, date, time
 
 
+"""Creation Date
+    Last Update
+"""
+
 class Device():
     # Class variable that is shared between all instances of the class
     db_connector = TinyDB(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'database.json'), storage=serializer).table('devices')
-
+    
+    __creation_date = None
+    __last_update = None
+    
     # Constructor
     def __init__(self, device_name : str, managed_by_user_id : str):
         self.device_name = device_name
@@ -16,7 +23,10 @@ class Device():
         # We don't store the user object itself, but only the id (as a key)
         self.managed_by_user_id = managed_by_user_id
         self.is_active = True
-        
+        self.__creation_date = date.today()
+        self.__last_update = self.__creation_date
+        self.end_of_life = None
+
     # String representation of the class
     def __str__(self):
         return f'Device (Object) {self.device_name} ({self.managed_by_user_id})'
@@ -56,6 +66,27 @@ class Device():
         self.managed_by_user_id = managed_by_user_id
 
     # Class method that can be called without an instance of the class to construct an instance of the class
+    def get_creation_date(self):
+        return self.__creation_date
+
+    def first_maintainance(self):
+        return self.__creation_date
+    
+    def set_last_update(self, date):
+        self.__last_update = date
+        
+
+    def get_last_update(self):
+        return self.__last_update
+
+    def get_end_of_life(self):
+        if self.end_of_life == None:
+            return -1
+        else:
+            return self.end_of_life
+    def set_end_of_life(self, date):
+        self.end_of_life = datetime.strptime(date, "%Y-%m-%d")
+
     @classmethod
     def find_by_attribute(cls, by_attribute: str, attribute_value: str, num_to_return=1):
         # Load data from the database and create an instance of the Device class
@@ -76,9 +107,6 @@ class Device():
         for device_data in Device.db_connector.all():
             devices.append(Device(device_data['device_name'], device_data['managed_by_user_id']))
         return devices
-
-
-
     
 
 if __name__ == "__main__":

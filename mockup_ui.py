@@ -6,18 +6,22 @@ from startbildschirm import check_password
 from users import User
 from reservations import Reservation
 from maintenance import Maintenance
-from datetime import datetime
+from datetime import datetime, date, time
+import pandas as pd
+
+"""Device die Attribute
+    -Last update 
+    -Creation, End of Life Datum 
+"""
 
 if check_password():
     tab1, tab2, tab3, tab4 = st.tabs(["Geräte", "Nutzer", "Reservierungssystem", "Wartungs-Management"])
-
+    print(datetime.combine(date.today(), time(10, 0)))
     if "sb_current_device" not in st.session_state:
         st.session_state.sb_current_device = ""
-
     # Tabs
     with tab1:
         st.title("Geräte-Verwaltung")
-
         devices_in_db = find_devices()
         st.subheader("Gerät ändern")
         if devices_in_db:
@@ -29,6 +33,9 @@ if check_password():
                 loaded_device = Device.find_by_attribute("device_name", current_device_name)
                 if loaded_device:
                     st.write(f"Loaded Device: {loaded_device}")
+                    st.write(f"Erstelldatum: {loaded_device.get_creation_date()}")
+                    st.write(f"Letzte Änderung: {loaded_device.get_last_update()}")
+                    
                 else:
                     st.error("Device not found in the database.")
 
@@ -41,6 +48,8 @@ if check_password():
                     # Every form must have a submit button.
                     submitted = st.form_submit_button("Submit")
                     if submitted:
+                        new_update = date.today()
+                        loaded_device.set_last_update(new_update)
                         loaded_device.store_data()
                         st.write("Data stored.")
                         st.rerun()
@@ -53,10 +62,14 @@ if check_password():
             
                 new_device_name = st.text_input("Gerätename")
                 new_managed_by_user_id = st.text_input("Verantwortlicher")
+                new_end_of_life = st.text_input("Ablaufdatum: YYYY-MM-DD")
                 new_device = Device(new_device_name, new_managed_by_user_id)
+                
+                
 
                 submit_device = st.form_submit_button("Gerät hinzufügen")
                 if submit_device:
+                    new_device.set_end_of_life(new_end_of_life)
                     st.write("Gerät hinzugefügt.")
                     new_device.store_data()
                     st.rerun()
@@ -77,17 +90,14 @@ if check_password():
             st.stop()
 
     with tab2:
-        
-        
-        print("Tab2")
-        st.header("Personnel managment")
-        
-        option = st.selectbox( 'Choose an option:', ('Create a user', 'Remove a user', 'Show all users') )
 
-        if option == "Create a user":
+        st.header("Personalverwaltung")
+        option = st.selectbox( 'Wähle Option:', ('Erstellen', 'Entfernen', 'Alle Nutzer zeigen') )
+
+        if option == "Erstellen":
             
-            firstname = st.text_input("Enter the first name: ")
-            surname = st.text_input("Enter the surname: ")
+            firstname = st.text_input("Vorname: ")
+            surname = st.text_input("Nachname: ")
             name = firstname + " " + surname 
             email = firstname + "." + surname + "@mci.edu"
             
@@ -99,9 +109,9 @@ if check_password():
                 with open('user.json', 'r+', encoding='utf-8') as file:
                     data = json.load(file)
                     if name != "":
-                        st.write("New user: " + name + " : " + email)
+                        st.write("Neuer Nutzer: " + name + " : " + email)
 
-                    if st.button("Add"):
+                    if st.button("Hinzufügen"):
                     # add new data
                         data['Users'][name] = email
                     
@@ -115,20 +125,20 @@ if check_password():
             
             
 
-        if option == "Remove a user":
+        if option == "Entfernen":
 
-            firstname = st.text_input("Add first name: ")
-            surname = st.text_input("Add surname: ")
+            firstname = st.text_input("Vorname: ")
+            surname = st.text_input("Nachname: ")
             name = firstname + " " + surname
             
             try:
                 with open('user.json', 'r+', encoding='utf-8') as file:
                     data = json.load(file)
         
-                    if st.button("Remove"):
+                    if st.button("Entfernen"):
                         if name in data["Users"]:
                             del data["Users"][name]
-                            st.write("The user has been deleted")
+                            st.write("Nutzer gelöscht")
                         else:
                             st.write("The user does not exist")
 
@@ -139,7 +149,7 @@ if check_password():
                 print("File not found")
 
 
-        if option == "Show all users":
+        if option == "Alle Nutzer zeigen":
 
             #unicode transformation format 8 bit ist ein Zeichencodierungssystem zum Übertragen von Zeichen in verschiedenen Schriftsystemen
             try:
@@ -151,7 +161,7 @@ if check_password():
                 #st.write(data)
                 for i in sortedusers:
                     st.write(i + " : " + sortedusers[i])
-                    print(sortedusers)
+                
             except FileNotFoundError:
                 print("File not found")
 
@@ -163,7 +173,6 @@ if check_password():
             st.subheader("Reservierungen")
             reservations = Reservation.get_all_reservations()
             if reservations:
-                import pandas as pd
                 df = pd.DataFrame(reservations)
                 st.dataframe(df)
             else:
