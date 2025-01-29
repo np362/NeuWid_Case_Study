@@ -3,6 +3,7 @@ import os
 from tinydb import TinyDB, Query
 from serializer import serializer
 from datetime import datetime, date, time
+from maintenance import Maintenance
 
 
 class Device():
@@ -15,6 +16,9 @@ class Device():
         # The user id of the user that manages the device
         # We don't store the user object itself, but only the id (as a key)
         self.managed_by_user_id = managed_by_user_id
+        self.__maintenance_cost = Maintenance.get_maintenance_cost(self.device_name)
+        self.next_maintenance = Maintenance.get_maintenance_start_time(self.device_name)
+        self.__maintenance_intervall = Maintenance.calculate_interval_until_maintenance(self.device_name)
         self.is_active = True
         
     # String representation of the class
@@ -33,6 +37,7 @@ class Device():
         if result:
             # Update the existing record with the current instance's data
             result = self.db_connector.update(self.__dict__, doc_ids=[result[0].doc_id])
+            
             print("Data updated.")
         else:
             # If the device doesn't exist, insert a new record

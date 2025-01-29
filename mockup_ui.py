@@ -213,6 +213,26 @@ if check_password():
             else:
                 st.write("Keine Wartung gefunden.")
 
+        new_device_id = st.number_input("Geräte-ID", min_value=1, max_value=len(Maintenance.show_maintenance()), step=1)
+        if st.button("Nächste Wartung anzeigen"):
+            next_maintenance = Maintenance.maintenances[new_device_id-1]["start_time"]
+            if next_maintenance:
+                st.write(f"Nächste Wartung: {next_maintenance}")
+            else:
+                st.write("Keine Wartung gefunden.")
+
+        if st.button("Kosten anzeigen"):
+            cost = Maintenance.maintenances[new_device_id-1]["cost"]
+            if cost:
+                st.write(f"Kosten: {cost}€")
+
+        if st.button("Intervall zur nächsten Wartung anzeigen"):
+            intervall_next_maintenance = Maintenance.calculate_interval_until_maintenance(new_device_id)
+            if intervall_next_maintenance:
+                st.write(f"Nächste Wartung in {intervall_next_maintenance} Tagen.")
+            else:
+                st.write("Keine Wartung gefunden.")
+
         st.write("---")
 
         st.subheader("Wartung bearbeiten")
@@ -234,6 +254,8 @@ if check_password():
                     st.rerun()
                 except Exception as e:
                     st.error(f"Fehler beim Konfigurieren der Wartung: {e}")
+
+            
 
         st.write("---")
 
