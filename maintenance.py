@@ -1,34 +1,39 @@
 """
 This module contains the maintenance functions for the database.
 """
-
-from datetime import datetime, date, time
+import os
+from tinydb import TinyDB
+from serializer import serializer
+from datetime import datetime, date, time, timedelta
 
 class Maintenance:
 
-    maintenances = [
-        {
-            "id": 1,
-            "device_id": 1,
-            "start_time": datetime.combine(date.today(), time(10, 0)),
-            "end_time": datetime.combine(date.today(), time(12, 0)),
-            "cost": 100
-        },
-        {
-            "id": 2,
-            "device_id": 2,
-            "start_time": datetime.combine(date.today(), time(12, 0)),
-            "end_time": datetime.combine(date.today(), time(14, 0)),
-            "cost": 200
-        },
-        {
-            "id": 3,
-            "device_id": 3,
-            "start_time": datetime.combine(date.today(), time(14, 0)),
-            "end_time": datetime.combine(date.today(), time(16, 0)),
-            "cost": 150
-        }
-    ]
+    db_connector = TinyDB(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'database.json'), storage=serializer).table('devices')
+    data = db_connector.all()
+    if data:
+        maintenances = [
+            {
+                "id": 1,
+                "device_id": 1,
+                "start_time": datetime.combine(date.today()+timedelta(days=2), time(10, 0)),
+                "end_time": datetime.combine(date.today()+timedelta(days=2), time(12, 0)),
+                "cost": 100
+            },
+            {
+                "id": 2,
+                "device_id": 2,
+                "start_time": datetime.combine(date.today()+timedelta(days=2), time(12, 0)),
+                "end_time": datetime.combine(date.today()+timedelta(days=2), time(14, 0)),
+                "cost": 200
+            },
+            {
+                "id": 3,
+                "device_id": 3,
+                "start_time": datetime.combine(date.today()+timedelta(days=2), time(14, 0)),
+                "end_time": datetime.combine(date.today()+timedelta(days=2), time(16, 0)),
+                "cost": 150
+            }
+        ]
 
     def __init__(self, id: int, device_id: int, start_time: datetime, end_time: datetime) -> None:
         """Create a new maintenance based on the given parameters"""
@@ -68,6 +73,36 @@ class Maintenance:
                 "cost": cost
         })
     
+    @classmethod
+    def calculate_interval_until_maintenance(cls, id: int):
+        """Berechnet die Zeit bis zur nächsten Wartung für die angegebene ID."""
+        now = datetime.now()
+        time_until_maintenance = None
+        
+        for maintenance in cls.maintenances:
+            if maintenance["id"] == id:
+                diff = (maintenance["start_time"] - now).days
+                if time_until_maintenance is None or diff < time_until_maintenance:
+                    time_until_maintenance = diff
+        
+        return time_until_maintenance
+
+    @classmethod
+    def get_maintenance_cost(cls, id: int):
+        """Get the maintenance cost for the given id"""
+        for maintenance in cls.maintenances:
+            if maintenance["id"] == id:
+                return maintenance["cost"]
+        return None
+    
+    @classmethod
+    def get_maintenance_start_time(cls, id: int):
+        """Get the maintenance start time for the given id"""
+        for maintenance in cls.maintenances:
+            if maintenance["id"] == id:
+                return maintenance["start_time"]
+        return None
+
     @classmethod
     def calculate_quarterly_costs(cls):
         """Calculate maintenance costs per quarter"""
